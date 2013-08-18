@@ -29,13 +29,14 @@ public class AnalyzerTest
 		{
 			System.out.println(w.isStatic+"\n");
 		}
-		System.out.println(e.inflect("Ģenetīvs", "geo"));
+		System.out.println(e.inflect("Datīvs", "geo"));
 	}
 	
 	@Test
 	public void pedinaLietvpedina() throws Exception
 	{
 		Expression e = new Expression("Skaista Latvijas Zaļā bibliotēka");
+		System.out.println(e.inflect("Ģenitīvs", "geo"));
 		
 	}
 	
