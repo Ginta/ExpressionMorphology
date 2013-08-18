@@ -1,6 +1,7 @@
 package expressionMorphology.Testi;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import expressionMorphology.analyzer.Expression;
@@ -8,40 +9,63 @@ import expressionMorphology.analyzer.ExpressionWord;
 
 public class AnalyzerTest
 {
-//Ģeogrāfisko nosaukumu testi
+//Organizāciju nosaukumu testi
+
 	@Test
-	public void lietvLietv() throws Exception
+	public void test1() throws Exception
 	{
-		Expression e = new Expression("Mākslas akadēmija");
-		e.addPattern("geo");
-		for (ExpressionWord w : e.expWords)
-		{
-			System.out.println(w.isStatic+"\n");
-		}
+		Expression e = new Expression("Latvijas vēstures un filoloģijas fakultāte");
+		//System.out.println(e.inflect("Ģenitīvs", "org"));
+		assertEquals("Latvijas vēstures un filoloģijas fakultātes", e.inflect("Ģenitīvs", "org"));
 	}
 	
 	@Test
-	public void ipvLietv() throws Exception
+	public void test2() throws Exception
 	{
-		Expression e = new Expression("kaķis");
-		e.addPattern("geo");
-		for (ExpressionWord w : e.expWords)
-		{
-			System.out.println(w.isStatic+"\n");
-		}
-		System.out.println(e.inflect("Datīvs", "geo"));
+		Expression e = new Expression("Latvijas vēstures un filoloģijas fakultāti");
+		//System.out.println(e.normalize());
+		assertEquals("Latvijas vēstures un filoloģijas fakultāte", e.normalize()); // e.normalize() == e.inflect("Nominatīvs", "org") == e.inflect("Nominatīvs", null)
 	}
 	
 	@Test
-	public void pedinaLietvpedina() throws Exception
+	public void test3() throws Exception
 	{
-		Expression e = new Expression("Skaista Latvijas Zaļā bibliotēka");
-		System.out.println(e.inflect("Ģenitīvs", "geo"));
-		
+		Expression e = new Expression("Latvijas rakstnieku savienība");
+		//System.out.println(e.inflect("Lokatīvs", "org"));
+		assertEquals("Latvijas rakstnieku savienībā", e.inflect("Lokatīvs", "org"));
 	}
 	
+	@Test
+	public void test4() throws Exception
+	{
+		Expression e = new Expression("Hārvardas universitāte");
+		assertEquals("Hārvardas universitāti", e.inflect("Akuzatīvs", "org"));
+	}
 	
+	@Test
+	public void test5() throws Exception
+	{
+		Expression e = new Expression("Latvija tēla veidošanas institūtā");
+		assertEquals("Latvija tēla veidošanas institūts", e.normalize());
+	}
 	
+	@Test
+	public void test6() throws Exception
+	{
+		Expression e = new Expression("izdevniecība \"Liesma\"");
+		assertEquals("izdevniecības \"Liesma\"", e.inflect("Ģenetīvs", "org"));
+	}
+	
+	@Test
+	public void test7() throws Exception
+	{
+		Expression e = new Expression("Jūrmalas 1. vidusskola");
+		assertEquals("Jūrmalas 1. vidusskolu", e.inflect("Akuzatīvs", "org"));
+	}
 	
 //Cilvēku vārdu un uzvārdu testi
+	
+//Ģeogrāfisko vietu nosaukumu testi
+	
+//Apbalvojumu nosaukumu testi
 }

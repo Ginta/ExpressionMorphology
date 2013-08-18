@@ -6,7 +6,7 @@ package expressionMorphology.analyzer;
  */
 public enum Category
 {
-	geo,
+	org,
 	hum,
 	loc
 }

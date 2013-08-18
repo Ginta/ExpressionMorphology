@@ -60,6 +60,7 @@ public class Expression
 	{
 		expWords=new LinkedList<ExpressionWord>();
 		
+		//FIXME šo vajadzētu ielādēt globāli, nevis uz katru objektu
 		CMMClassifier<CoreLabel> morphoClassifier = CMMClassifier.getClassifier(new File("../LVTagger/models/lv-morpho-model.ser"));
 		List<CoreLabel> sentence = LVMorphologyReaderAndWriter.analyzeSentence(phrase);
 		sentence = morphoClassifier.classify(sentence);
@@ -71,7 +72,7 @@ public class Expression
 		{
 			token = label.getString(TextAnnotation.class);
 			
-			if(token.equals("<s>"))
+			if(token.equals("<s>")) //FIXME kāpēc tiek pievienoti <s>? Varbūt ir kāds labāks veids kā to apiet
 			{
 				continue;
 			}
@@ -95,14 +96,14 @@ public class Expression
 	{
 		boolean staticWhile=false;
 		cat=get(c);
-
+		
 		switch(cat)
 		{
-			case geo :
+			case org :
 			{
 				for (ExpressionWord w : expWords)
 				{
-					if(w.word.isRecognized()==false)
+					if(w.word.isRecognized()==false || w.bestWordform.lexeme==null) //FIXME nav īstā vieta, kur pārbaudīt, vai lexeme is null
 					{
 						w.isStatic=true;
 						continue;
@@ -145,12 +146,17 @@ public class Expression
 			{
 				break;
 			}
+			
+			default :
+			{
+				break;
+			}
 		}
 	}
 	
-	public String normalize(String inflect) throws Exception
+	public String normalize() throws Exception
 	{
-		return inflect(inflect,null);
+		return inflect("Nominatīvs",null);
 	}
 	
 	public String inflect(String inflect, String cat) throws Exception
@@ -169,17 +175,17 @@ public class Expression
 			{
 				forma=w.bestWordform;
 				
-				attribute_map=forma.attributes;
-				attribute_map.put("Locījums",inflect);
+				attribute_map=forma.attributes; //FIXME atribūtu map ir private
+				attribute_map.put("Locījums",inflect); //FIXME varbūt nav labi modificēt wordform attributes map
 				attribute_map.remove("Galotnes nr");
 				attribute_map.remove("Vārds");
-				//attribute_map.remove("Locījums");
+				//FIXME varbūt vajag izmest vēl kādu īpašību
 				filtrs=new AttributeValues();
 				filtrs.addAttributes(attribute_map);
 				/*
-				inflectedPhrase+=locītājs.generateInflections(forma.getValue("Pamatforma"),false,filtrs).toString()+'\n';
+				inflectedPhrase+=locītājs.generateInflections(forma.getValue("Pamatforma"),false,filtrs).toString()+' ';
 				*/
-				inflWordforms=locītājs.generateInflections(forma.lexeme);
+				inflWordforms=locītājs.generateInflections(forma.lexeme); //FIXME lexem is private
 				for(Wordform wf : inflWordforms)
 				{
 					//System.out.println(wf.getToken());
@@ -187,14 +193,12 @@ public class Expression
 					{
 						inflectedPhrase+=wf.getToken()+' ';
 					}
-					//System.out.println("-------------------");
 				}
-				inflectedPhrase+='\n';
 				
 			}
 			else
 			{
-				inflectedPhrase+=w.word.getToken()+'\n';
+				inflectedPhrase+=w.word.getToken()+' ';
 			}
 		}
 		
@@ -203,11 +207,15 @@ public class Expression
 	
 	public static Category get(String s)
 	{
+		if (s==null)
+		{
+			return Category.org;
+		}
 		switch(s)
 		{
-		case "geo":
-			return Category.geo;
-			default:
+		case "org":
+			return Category.org;
+		default:
 				return null;
 		}
 	}
